@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import NoteTable
 from .serializers import NoteSerializers
-
+from .utils import updateNote, getNoteDetail, deleteNote, getNotesList, createNote
 
 
 @api_view(['GET'])
@@ -42,16 +42,22 @@ def getRoutes(request):
     ]
     return Response(routes)
 
-@api_view(["GET"])
+@api_view(["GET","POST"])
 
 def getNotes(request):
-    notes=NoteTable.objects.all()
-    serializers=NoteSerializers(notes,many=True)
-    return Response(serializers.data)
-  
-@api_view(["GET"])
+      if request.method == 'GET':
+        return getNotesList(request)
+
+        if request.method == 'POST':
+            return createNote(request)
+@api_view(["GET","PUT","DELETE"])
 
 def getNote(request,pk):
-    notes=NoteTable.objects.get(id=pk)
-    serializers=NoteSerializers(notes,many=False)
-    return Response(serializers.data)
+    if request.method == 'GET':
+        return getNoteDetail(request, pk)
+
+    if request.method == 'PUT':
+        return updateNote(request, pk)
+
+    if request.method == 'DELETE':
+        return deleteNote(request, pk)
